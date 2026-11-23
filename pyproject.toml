@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling==1.33.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "whitebox-monitor"
+version = "0.1.0"
+description = "Three readouts per monitored action: integer, expected score, residual read."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy==2.5.5",
+    "safetensors==0.8.0",
+]
+
+[project.optional-dependencies]
+# Same torch / transformers / tokenizers as the September experiment.
+hf = [
+    "torch==2.14.0",
+    "transformers==5.17.0",
+    "tokenizers==0.23.2",
+]
+control-arena = [
+    "control-arena==20.1.1",
+    "inspect-ai==0.3.291",
+]
+# Installs vllm==0.30.0. Use a separate environment from `hf`: vLLM-Lens is
+# validated with torch 2.13.0 / transformers 5.18.0. Not run yet.
+vllm-lens = [
+    "vllm-lens==1.3.0",
+]
+dev = [
+    "pytest==9.2.0",
+    "pytest-asyncio==1.5.0",
+    "ruff==0.17.6",
+]
+
+[project.scripts]
+wbm = "whitebox_monitor.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/whitebox_monitor"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-m 'not gpu and not needs_cache' --strict-markers"
+markers = [
+    "gpu: needs a GPU and gpt-oss-20b; run by the user on a pod",
+    "needs_cache: needs the September activation cache",
+    "hub: downloads a small model from the Hugging Face Hub",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["pydantic.Field"]

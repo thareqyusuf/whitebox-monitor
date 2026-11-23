@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+# run outputs
+logs/
+out/
+acts/
+validate_september_*.json
+examples/prompts.jsonl
+*.eval
+.env
+.claude/settings.local.json
